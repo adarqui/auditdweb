@@ -1,0 +1,28 @@
+{
+  "name": "auditdweb",
+  "preferGlobal": false,
+  "version": "0.0.1",
+  "author": "adarqui",
+  "description": "auditdweb",
+  "contributors": [
+    {
+      "name": "Andrew Darqui",
+      "email": "andrew.darqui@gmail.com"
+    }
+  ],
+  "keywords": [
+    "cli",
+    "http",
+    "json",
+    "auditd"
+  ],
+  "dependencies" : {
+    "underscore" : "~1.5.2",
+    "lazy" : "~1.0.11",
+    "nconf" : "~0.6.7"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.9"
+  }
+}
