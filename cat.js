@@ -37,7 +37,9 @@ else {
 stream.on('end', function(err) {
   var messages = auditd.messages();
   if(nconf.get('defer')) {
-    console.log(JSON.stringify(messages,null,4));
+    if(nconf.get('debug')) {
+      console.log(JSON.stringify(messages,null,4));
+    }
   }
 })
 
@@ -50,7 +52,16 @@ var lazy = new Lazy(stream)
     var line = line.toString();
     if(!nconf.get('defer')) {
       cb = function(err,js) {
-        console.log("processing:",err,JSON.stringify(js,null,4))
+        if(nconf.get('debug')) {
+          console.log("processing:",err,JSON.stringify(js,null,4))
+        }
+        if(js.type == 'EXECVE') {
+          var argv = []
+          for(var v in js) {
+            if(v[0] == 'a') { argv.push(js[v]) }
+          }
+          console.log("EXECVE:", argv)
+        }
       }
     }
     auditd.process(line,cb);

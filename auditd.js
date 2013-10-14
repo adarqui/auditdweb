@@ -36,11 +36,14 @@ var _Auditd = function() {
 
     entry = $.messages[id];
 
+    tokens.splice(0,5);
+
     queue_item = {};
     _.each(tokens, function(token,index,list) {
       var key = token.indexOf('=');
       var rest = token.substring(key+1,token.length);
       key = token.substring(0,key);
+      if(key.length == 0) return;
       queue_item[key] = rest;
     })
 
