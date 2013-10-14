@@ -13,8 +13,13 @@ var _Auditd = function() {
     var tokens, audit, re, re_result, entry, queue_item;
     tokens = line.split(' ')
     audit = tokens[7];
+
+    if(tokens.length < 7) return;
+
     re = /msg=audit\((.*):(.*)\)/
     re_result = re.exec(audit);
+
+    if(re_result == null) return;
 
     id = re_result[2];
 
@@ -40,6 +45,10 @@ var _Auditd = function() {
     })
 
     entry.queue.push(queue_item);
+
+    if(cb) {
+      cb(null, queue_item);
+    }
   }
 
   Auditd.messages = function() {
