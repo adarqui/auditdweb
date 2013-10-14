@@ -10,14 +10,13 @@ var _Auditd = function() {
   $.messages = {}
 
   Auditd.process = function(line, cb) {
-    console.log("line:",line);
-    var tokens = line.split(' ')
+    var tokens, audit, re, re_result, entry, queue_item;
+    tokens = line.split(' ')
+    audit = tokens[7];
+    re = /msg=audit\((.*):(.*)\)/
+    re_result = re.exec(audit);
 
-    var audit = tokens[7];
-    var re = /msg=audit\((.*):(.*)\)/
-    var re_result = re.exec(audit);
-
-    var id = re_result[2];
+    id = re_result[2];
 
     if(!$.messages[id]) {
       var msg = {
@@ -25,23 +24,26 @@ var _Auditd = function() {
         host : tokens[3],
         daemon : tokens[4],
         node : tokens[5],
-        queue : {},
+        queue : [],
       }
       $.messages[id] = msg;
     }
 
-    var entry = $.messages[id];
+    entry = $.messages[id];
 
-    for(var v in tokens) {
-      var token = tokens[v];
-      var kv = token.split('=',2);
-      console.log(kv);
-    }
+    queue_item = {};
+    _.each(tokens, function(token,index,list) {
+      var key = token.indexOf('=');
+      var rest = token.substring(key+1,token.length);
+      key = token.substring(0,key);
+      queue_item[key] = rest;
+    })
 
-    //console.log(msg);
-    console.log(re_result);
+    entry.queue.push(queue_item);
+  }
 
-
+  Auditd.messages = function() {
+    return $.messages;
   }
 
   Auditd.init = function() {

@@ -24,14 +24,17 @@ if(!conf.in) {
 
 
 var auditd = new Auditd();
+var stream = fs.createReadStream(conf.in)
 
+stream.on('end', function(err) {
+  var messages = auditd.messages();
+  console.log(JSON.stringify(messages,null,4));
+})
 
-var lazy = new Lazy(fs.createReadStream(conf.in))
+var lazy = new Lazy(stream)
   .lines
   .forEach(function(line) {
     var line = line.toString();
-//    console.log(line)
     auditd.process(line, function(err,js) {
-      console.log("err",err,"js",js);
     });
   })
