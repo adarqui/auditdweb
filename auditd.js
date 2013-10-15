@@ -60,10 +60,11 @@ var _Auditd = function() {
       queue_item[key] = rest;
     })
 
+    var item = { msg : entry, event : queue_item };
     entry.queue.push(queue_item);
 
     if(cb) {
-      cb(null, queue_item);
+      cb(null, item);
     }
   }
 

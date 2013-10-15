@@ -45,6 +45,38 @@ stream.on('end', function(err) {
 
 var cb = null;
 
+var print_stuff = function(js) {
+
+  var output = []
+  var type = nconf.get('type');
+  if(type) {
+    if(js.event.type != type) return;
+  }
+
+  if(nconf.get('syslog')) {
+    var syslog = js.msg.host + " " + js.msg.daemon;
+    output.push(syslog);
+  }
+
+  if(nconf.get('raw')) {
+    output.push(js);
+  }
+
+  if(nconf.get('argv')) {
+    var argv = [];
+    for(var v in js.event) {
+      if(v[0] == 'a') {
+        var sanitized = js.event[v].replace(/^"/g,'').replace(/"$/g,'');
+        argv.push(sanitized);
+      }
+    }
+    var command_line = argv.join(' ')
+    output.push(command_line);
+  }
+
+  console.log(output.join(' '));
+}
+
 var lazy = new Lazy(stream)
   .lines
   .forEach(function(line) {
@@ -55,13 +87,7 @@ var lazy = new Lazy(stream)
         if(nconf.get('debug')) {
           console.log("processing:",err,JSON.stringify(js,null,4))
         }
-        if(js.type == 'EXECVE') {
-          var argv = []
-          for(var v in js) {
-            if(v[0] == 'a') { argv.push(js[v]) }
-          }
-          console.log("EXECVE:", argv)
-        }
+        print_stuff(js)
       }
     }
     auditd.process(line,cb);
